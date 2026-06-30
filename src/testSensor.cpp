@@ -8,7 +8,7 @@
  */
 #include "handleData.h"
 
-void displaySensorDetails(Adafruit_ADXL345_Unified accel)
+void displaySensorDetails(Adafruit_ADXL345_Unified& accel)
 {
   sensor_t sensor;
   accel.getSensor(&sensor);
@@ -24,7 +24,7 @@ void displaySensorDetails(Adafruit_ADXL345_Unified accel)
   delay(500);
 }
 
-void displayDataRate(Adafruit_ADXL345_Unified accel)
+void displayDataRate(Adafruit_ADXL345_Unified& accel)
 {
   Serial.print  ("Data Rate:    "); 
  
@@ -85,7 +85,7 @@ void displayDataRate(Adafruit_ADXL345_Unified accel)
   Serial.println(" Hz"); 
 }
 
-void displayRange(Adafruit_ADXL345_Unified accel)
+void displayRange(Adafruit_ADXL345_Unified& accel)
 {
   Serial.print ("Range:         +/- ");
  
@@ -110,7 +110,7 @@ void displayRange(Adafruit_ADXL345_Unified accel)
   Serial.println(" g"); 
 }
 
-void setupSensor(Adafruit_ADXL345_Unified accel){
+void setupSensor(Adafruit_ADXL345_Unified& accel){
     Serial.println("Accelerometer Test"); Serial.println("");
     
     /* Initialise the sensor */
@@ -136,7 +136,12 @@ void setupSensor(Adafruit_ADXL345_Unified accel){
     Serial.println("");
 }
 
-void sensorLoop(Adafruit_ADXL345_Unified accel){
+void sensorLoop(Adafruit_ADXL345_Unified& accel){
+    /* Delay blocks the mqtt loop so we will proceed differently*/
+    static unsigned long last = 0;
+    if (millis() - last < 500) return;
+    last = millis();
+    
     /* Get a new sensor event */ 
     sensors_event_t event; 
     accel.getEvent(&event);
@@ -144,6 +149,6 @@ void sensorLoop(Adafruit_ADXL345_Unified accel){
     /* Display the results (acceleration is measured in m/s^2) */
     Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
     Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
-    Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
-    delay(500);
+    Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s²　");
+    //delay(500);
 }
